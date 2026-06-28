@@ -76,7 +76,7 @@ export const Hero = () => {
       />
 
       <div className="container mx-auto px-6 lg:px-24 relative z-10 mt-20 lg:mt-0">
-        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 lg:gap-16">
+        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-10 lg:gap-[clamp(3rem,8vw,8rem)]">
           <div className="max-w-2xl flex-1">
             {/* Greeting */}
             <motion.p
@@ -93,7 +93,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold font-heading mb-2"
+              className="text-[clamp(2.5rem,5vw,5.5rem)] leading-tight font-bold font-heading mb-2"
             >
               Muhammad Muttayab.
             </motion.h1>
@@ -103,7 +103,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold font-heading text-muted-foreground mb-6"
+              className="text-[clamp(1.875rem,4vw,4.5rem)] leading-tight font-bold font-heading text-muted-foreground mb-6"
             >
               <AnimatedText text="I build intelligent systems that ship ROI." delay={0.9} />
             </motion.h2>
@@ -186,7 +186,7 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 0.7, delay: 1.2, type: 'spring', stiffness: 100 }}
-            className="w-full max-w-[280px] sm:max-w-sm lg:w-[320px] xl:w-[400px] relative mt-10 lg:mt-0"
+            className="w-full max-w-[280px] sm:max-w-sm lg:w-[clamp(300px,35vw,450px)] lg:max-w-none relative mt-10 lg:mt-0"
           >
             <div className="aspect-square rounded-2xl overflow-hidden glass-card relative z-10 hover:border-primary/50 transition-colors duration-500">
               <img 
