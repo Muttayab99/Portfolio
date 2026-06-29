@@ -1,29 +1,13 @@
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { Github, Linkedin, Mail, ChevronDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { AmbientGlow } from './AmbientGlow';
 
 const socialLinks = [
   { icon: Github, href: 'https://github.com/Muttayab99', label: 'GitHub' },
   { icon: Linkedin, href: 'https://linkedin.com/in/m-muttayab', label: 'LinkedIn' },
   { icon: Mail, href: '#contact', label: 'Email' },
 ];
-
-const AnimatedText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 50);
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, text]);
-
-  return <span>{displayText}</span>;
-};
 
 export const Hero = () => {
   const mouseX = useMotionValue(0);
@@ -44,48 +28,34 @@ export const Hero = () => {
   const y2 = useTransform(mouseY, [0, window.innerHeight], [20, -20]);
 
   return (
-    <section className="min-h-screen flex flex-col justify-center relative overflow-hidden">
-      {/* Dynamic Background Elements */}
-      <div className="absolute inset-0 grid-pattern opacity-30" />
-      <motion.div
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-primary/10 to-cyan-500/10 rounded-full blur-3xl"
-        style={{ x: x1, y: y1 }}
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tl from-cyan-500/10 to-primary/10 rounded-full blur-3xl"
-        style={{ x: x2, y: y2 }}
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.5, 0.3, 0.5],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
-      />
+    <section className="hero min-h-screen flex flex-col justify-center relative overflow-hidden bg-background">
+      <AmbientGlow />
+      <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
 
       <div className="container mx-auto px-8 lg:px-24 xl:px-40 relative z-10 mt-20 lg:mt-0">
         <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 lg:gap-24 xl:gap-32">
           <div className="max-w-xl xl:max-w-2xl flex-1">
-            {/* Greeting */}
+            {/* Status Line */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex items-center gap-2 font-mono text-xs tracking-wider text-primary mb-6 uppercase"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              OPEN TO WORK
+              <span className="mx-2 text-muted-foreground">•</span>
+              LAHORE <span className="mx-1">↔</span> REMOTE
+            </motion.div>
+
+            {/* Role Tag */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="text-primary font-mono text-sm md:text-base mb-4"
+              className="text-muted-foreground font-mono text-sm md:text-base mb-4 tracking-widest uppercase"
             >
-              Hi, my name is
+              AI Engineer · Data Scientist
             </motion.p>
 
             {/* Name */}
@@ -93,46 +63,36 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold font-heading mb-2"
+              className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold font-heading mb-4 tracking-tight"
             >
-              Muhammad Muttayab.
+              <span className="text-foreground">Muhammad</span> <span className="text-muted-foreground font-serif italic font-normal">Muttayab.</span>
             </motion.h1>
 
-            {/* Tagline with animated text reveal */}
+            {/* Subhead */}
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-bold font-heading text-muted-foreground mb-6"
+              className="text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold font-heading text-muted-foreground mb-10 leading-tight"
             >
-              <AnimatedText text="I build intelligent systems that ship ROI." delay={0.9} />
+              I build intelligent systems that ship ROI.
             </motion.h2>
 
-
-            {/* Trust Signal / Stat Strip */}
+            {/* Company Social Proof */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm font-mono text-muted-foreground/80 mb-8 mt-2"
+              transition={{ duration: 0.5, delay: 0.7 }}
+              className="flex items-center gap-4 text-sm font-mono text-muted-foreground mb-10 tracking-widest uppercase"
             >
-              <div className="flex items-center gap-2">
-                <span className="text-primary">▹</span>
-                2+ Year Experience
-              </div>
-              <span className="hidden sm:inline text-border/50">•</span>
-              <div className="flex items-center gap-2">
-                <span className="text-primary">▹</span>
-                5 Production AI Systems Shipped
-              </div>
-              <span className="hidden lg:inline text-border/50">•</span>
-              <div className="flex items-center gap-2">
-                <span className="text-primary">▹</span>
-                Leading team at current company
-              </div>
+              <span>NEURALOGIC</span>
+              <span>•</span>
+              <span>SYSTEMS LTD</span>
+              <span>•</span>
+              <span>ADDO AI</span>
             </motion.div>
 
-            {/* CTA Buttons with enhanced animations */}
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -141,42 +101,19 @@ export const Hero = () => {
             >
               <motion.a
                 href="#projects"
-                className="btn-primary relative overflow-hidden group"
-                whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(20, 184, 166, 0.5)' }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="relative z-10">View My Work</span>
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary to-cyan-500"
-                  initial={{ x: '-100%' }}
-                  whileHover={{ x: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.a>
-              <motion.a
-                href="https://linkedin.com/in/m-muttayab"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline relative overflow-hidden group flex items-center gap-2"
+                className="bg-primary text-primary-foreground rounded-full py-3 px-7 font-semibold hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)] dark:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                animate={{
-                  y: [0, -5, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
               >
-                <Linkedin size={18} className="relative z-10" />
-                <span className="relative z-10">Connect on LinkedIn</span>
-                <motion.div
-                  className="absolute inset-0 border-2 border-primary"
-                  initial={{ scale: 1 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                />
+                See the work →
+              </motion.a>
+              <motion.a
+                href="#contact"
+                className="px-6 md:px-8 py-3 md:py-4 rounded-full text-sm font-semibold border-2 border-foreground/20 hover:border-foreground/50 text-foreground bg-transparent transition-all hover:bg-muted"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Get in touch
               </motion.a>
             </motion.div>
           </div>
@@ -194,10 +131,10 @@ export const Hero = () => {
                 alt="Muhammad Muttayab" 
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
               />
-              <div className="absolute inset-0 bg-primary/10 mix-blend-overlay hover:opacity-0 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-primary/10 mix-blend-overlay hover:opacity-0 transition-opacity duration-500 pointer-events-none" />
             </div>
             {/* Decorative back-border */}
-            <div className="absolute -z-10 top-6 -right-6 w-full h-full rounded-2xl border-2 border-primary/30" />
+            <div className="absolute -z-10 top-6 -right-6 w-full h-full rounded-2xl border-2 border-zinc-500/30" />
           </motion.div>
         </div>
       </div>

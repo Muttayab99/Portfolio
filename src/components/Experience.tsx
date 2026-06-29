@@ -81,7 +81,7 @@ export const Experience = () => {
           {/* Section Header */}
           <div className="flex items-center gap-4 mb-12">
             <h2 className="section-heading">
-              <span className="section-number">03.</span>
+
               Where I've Worked
             </h2>
             <div className="flex-1 h-px bg-border max-w-xs" />

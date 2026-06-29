@@ -31,7 +31,7 @@ export const About = () => {
           {/* Section Header */}
           <div className="flex items-center gap-4 mb-12">
             <h2 className="section-heading">
-              <span className="section-number">01.</span>
+
               About Me
             </h2>
             <div className="flex-1 h-px bg-border max-w-xs" />

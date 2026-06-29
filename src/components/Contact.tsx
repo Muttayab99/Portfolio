@@ -92,7 +92,7 @@ export const Contact = () => {
             transition={{ delay: 0.1 }}
             className="text-primary font-mono text-sm tracking-widest uppercase mb-4"
           >
-            05. What's Next?
+            What's Next?
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -120,7 +120,7 @@ export const Contact = () => {
             <div className="flex items-center gap-3 mb-10 text-primary font-mono text-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary shadow-[0_0_0_4px_rgba(45,212,191,0.15)]"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary ring-4 ring-primary/20"></span>
               </span>
               Available for work
             </div>
@@ -226,8 +226,8 @@ export const Contact = () => {
                 required
                 rows={5}
                 className={`w-full px-4 py-3 bg-muted border rounded-lg focus:outline-none focus:ring-1 transition-all resize-none ${errors.message
-                    ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                    : 'border-border focus:border-primary focus:ring-primary focus:shadow-[0_0_0_3px_rgba(45,212,191,0.12)]'
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500 focus:ring-2'
+                    : 'border-border focus:border-primary focus:ring-primary focus:ring-2 focus:ring-offset-1 focus:ring-offset-background'
                   }`}
                 placeholder="Your message..."
                 animate={errors.message ? { x: [-10, 10, -10, 10, 0] } : {}}
@@ -248,7 +248,7 @@ export const Contact = () => {
             <motion.button
               type="submit"
               disabled={state.submitting}
-              className="inline-flex items-center gap-2 bg-primary text-[#0a0e0e] font-semibold border-none rounded-lg px-7 py-3.5 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(45,212,191,0.3)]"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-semibold border-none rounded-lg px-7 py-3.5 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(255,255,255,0.15)] dark:hover:shadow-[0_10px_28px_rgba(255,255,255,0.2)]"
               whileTap={{ scale: state.submitting ? 1 : 0.98 }}
             >
               {state.submitting ? (

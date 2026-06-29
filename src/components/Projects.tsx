@@ -207,7 +207,7 @@ export const Projects = () => {
           {/* Section Header */}
           <div className="flex items-center gap-4 mb-8 max-w-4xl mx-auto">
             <h2 className="section-heading">
-              <span className="section-number">04.</span>
+
               Things I've Built
             </h2>
             <div className="flex-1 h-px bg-border max-w-xs" />
