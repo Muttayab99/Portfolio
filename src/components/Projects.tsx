@@ -280,7 +280,7 @@ export const Projects = () => {
                       <h4 className="text-xl md:text-2xl font-bold mb-3">
                         {featuredProjects[safeSpotlightIndex].title}
                       </h4>
-                      <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                      <p className="text-base text-muted-foreground mb-4 line-clamp-3">
                         {featuredProjects[safeSpotlightIndex].description}
                       </p>
                       <div className="flex flex-wrap gap-2 mb-4">
@@ -340,7 +340,7 @@ export const Projects = () => {
                 {/* Text Zone - Solid background, structured spacing */}
                 <div className="flex flex-col flex-1 mt-6">
                   <h3 className="text-xl font-bold mb-3">{project.title}</h3>
-                  <p className="text-muted-foreground text-sm mb-4 flex-1">
+                  <p className="text-base text-muted-foreground mb-4 flex-1">
                     {project.description}
                   </p>
 
@@ -445,7 +445,7 @@ export const Projects = () => {
                   </ModalHeader>
 
                   <div className="space-y-4 pt-4">
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
                       {selectedProject.description}
                     </p>
 

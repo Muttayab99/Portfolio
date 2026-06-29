@@ -43,7 +43,7 @@ export const About = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.2 }}
-              className="text-muted-foreground leading-relaxed"
+              className="text-base md:text-lg text-muted-foreground leading-relaxed"
             >
               I am an <span className="text-primary">AI Engineer</span> and{' '}
               <span className="text-primary">Data Scientist</span> who builds AI systems that
@@ -56,7 +56,7 @@ export const About = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.3 }}
-              className="text-muted-foreground leading-relaxed"
+              className="text-base md:text-lg text-muted-foreground leading-relaxed"
             >
               I'm currently <span className="text-primary">AI Engineer & Project Lead at
               Neuralogic</span>, where I fine-tuned an 848M-parameter SAM3 model for
@@ -71,7 +71,7 @@ export const About = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.4 }}
-              className="text-muted-foreground leading-relaxed"
+              className="text-base md:text-lg text-muted-foreground leading-relaxed"
             >
               Here are a few technologies I've been working with recently:
             </motion.p>
@@ -86,7 +86,7 @@ export const About = () => {
               {technologies.map((tech, index) => (
                 <li
                   key={tech}
-                  className="text-sm text-muted-foreground flex items-center gap-2"
+                  className="text-base text-muted-foreground flex items-center gap-2"
                 >
                   <span className="text-primary">▹</span>
                   {tech}
