@@ -32,9 +32,9 @@ export const Hero = () => {
       <AmbientGlow />
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
 
-      <div className="container mx-auto px-8 lg:px-24 xl:px-40 relative z-10 mt-20 lg:mt-0">
-        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 lg:gap-24 xl:gap-32">
-          <div className="max-w-xl xl:max-w-2xl flex-1">
+      <div className="container mx-auto px-6 lg:px-24 relative z-10 mt-20 lg:mt-0">
+        <div className="flex flex-col-reverse lg:flex-row items-center justify-center gap-16 lg:gap-24 xl:gap-32">
+          <div className="max-w-xl xl:max-w-2xl">
             {/* Status Line */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -63,7 +63,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold font-heading mb-4 tracking-tight"
+              className="text-4xl md:text-5xl lg:text-5xl xl:text-5xl leading-tight font-bold font-heading mb-4 tracking-tight"
             >
               <span className="text-foreground">Muhammad</span> <span className="text-muted-foreground font-serif italic font-normal">Muttayab.</span>
             </motion.h1>
@@ -73,7 +73,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold font-heading text-muted-foreground mb-10 leading-tight"
+              className="text-3xl md:text-3xl lg:text-4xl xl:text-4xl font-bold font-heading text-muted-foreground mb-10 leading-tight"
             >
               I build intelligent systems that ship ROI.
             </motion.h2>
@@ -123,7 +123,7 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 0.7, delay: 1.2, type: 'spring', stiffness: 100 }}
-            className="w-full max-w-[220px] sm:max-w-[260px] lg:w-[260px] xl:w-[320px] lg:max-w-none relative mt-10 lg:mt-0"
+            className="w-full max-w-[260px] sm:max-w-[280px] lg:w-[280px] xl:w-[340px] lg:max-w-none relative mt-10 lg:mt-0 shrink-0"
           >
             <div className="aspect-square rounded-2xl overflow-hidden glass-card relative z-10 hover:border-primary/50 transition-colors duration-500">
               <img 

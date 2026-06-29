@@ -82,8 +82,7 @@ export const Skills = () => {
           {/* Section Header */}
           <div className="flex items-center gap-4 mb-12">
             <h2 className="section-heading">
-
-              Skills & Technologies
+              Stack
             </h2>
             <div className="flex-1 h-px bg-border max-w-xs" />
           </div>
