@@ -75,9 +75,9 @@ export const Hero = () => {
         }}
       />
 
-      <div className="container mx-auto px-6 lg:px-24 relative z-10 mt-20 lg:mt-0">
+      <div className="container mx-auto px-8 lg:px-24 xl:px-40 relative z-10 mt-20 lg:mt-0">
         <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 lg:gap-24 xl:gap-32">
-          <div className="max-w-2xl flex-1">
+          <div className="max-w-xl xl:max-w-2xl flex-1">
             {/* Greeting */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -93,7 +93,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold font-heading mb-2"
+              className="text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold font-heading mb-2"
             >
               Muhammad Muttayab.
             </motion.h1>
@@ -103,7 +103,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold font-heading text-muted-foreground mb-6"
+              className="text-2xl md:text-3xl lg:text-3xl xl:text-4xl font-bold font-heading text-muted-foreground mb-6"
             >
               <AnimatedText text="I build intelligent systems that ship ROI." delay={0.9} />
             </motion.h2>
@@ -186,7 +186,7 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 0.7, delay: 1.2, type: 'spring', stiffness: 100 }}
-            className="w-full max-w-[280px] sm:max-w-sm lg:w-[280px] xl:w-[360px] lg:max-w-none relative mt-10 lg:mt-0"
+            className="w-full max-w-[220px] sm:max-w-[260px] lg:w-[260px] xl:w-[320px] lg:max-w-none relative mt-10 lg:mt-0"
           >
             <div className="aspect-square rounded-2xl overflow-hidden glass-card relative z-10 hover:border-primary/50 transition-colors duration-500">
               <img 
@@ -221,11 +221,11 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="fixed right-6 xl:right-10 bottom-0 hidden lg:flex flex-col items-center gap-8 after:content-[''] after:w-px after:h-32 after:bg-primary/30"
+        className="fixed right-6 xl:right-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-primary/30"
       >
         <a
           href="mailto:muhammadmuttayab09@gmail.com"
-          className="font-mono text-sm tracking-[0.2em] text-muted-foreground hover:text-primary hover:-translate-y-2 transition-all duration-300 py-4"
+          className="font-mono text-xs tracking-[0.2em] text-muted-foreground hover:text-primary hover:-translate-y-2 transition-all duration-300 py-4"
           style={{ writingMode: 'vertical-rl' }}
         >
           muhammadmuttayab09@gmail.com
@@ -237,7 +237,7 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="fixed left-6 xl:left-10 bottom-0 hidden lg:flex flex-col items-center gap-6 after:content-[''] after:w-px after:h-32 after:bg-primary/30"
+        className="fixed left-6 xl:left-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-primary/30"
       >
         {socialLinks.map((social) => (
           <motion.a
