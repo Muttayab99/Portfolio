@@ -43,7 +43,7 @@ export const Hero = () => {
   const reduce = useReducedMotion();
 
   return (
-    <section className="hero min-h-screen flex flex-col justify-center relative overflow-hidden bg-background">
+    <section className="hero min-h-screen pt-28 pb-16 flex flex-col justify-center relative overflow-hidden bg-background">
       {/* ---- Backdrop: globe canvas + grid + readability gradients ---- */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <HeroBackground className="absolute inset-0 opacity-85" />
@@ -67,7 +67,7 @@ export const Hero = () => {
       </div>
 
       {/* ---- Content ---- */}
-      <div className="container mx-auto px-6 lg:pl-24 lg:pr-12 xl:pl-28 relative z-10 mt-24 lg:mt-0">
+      <div className="container mx-auto px-6 lg:pl-24 lg:pr-12 xl:pl-28 relative z-10">
         <div className="max-w-2xl xl:max-w-3xl">
           {/* Status Line */}
           <motion.div
