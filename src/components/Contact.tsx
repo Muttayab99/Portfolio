@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { Mail, Send, Loader2, Github, Linkedin } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useForm, ValidationError } from '@formspree/react';
+import { profile } from '@/content/profile';
 
 export const Contact = () => {
   const ref = useRef(null);
@@ -47,16 +48,16 @@ export const Contact = () => {
   };
 
   useEffect(() => {
-    if (state.succeeded) {
-      setShowSuccess(true);
-      toast({
-        title: "Message sent!",
-        description: "Thank you for reaching out. I'll get back to you soon.",
-      });
-      setFormData({ name: '', email: '', message: '' });
-      setErrors({});
-      setTimeout(() => setShowSuccess(false), 5000);
-    }
+    if (!state.succeeded) return;
+    setShowSuccess(true);
+    toast({
+      title: "Message sent!",
+      description: "Thank you for reaching out. I'll get back to you soon.",
+    });
+    setFormData({ name: '', email: '', message: '' });
+    setErrors({});
+    const timer = setTimeout(() => setShowSuccess(false), 5000);
+    return () => clearTimeout(timer);
   }, [state.succeeded]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -90,7 +91,7 @@ export const Contact = () => {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.1 }}
-            className="text-primary font-mono text-sm tracking-widest uppercase mb-4"
+            className="text-brand font-mono text-sm tracking-widest uppercase mb-4"
           >
             What's Next?
           </motion.p>
@@ -117,26 +118,26 @@ export const Contact = () => {
               Open to new opportunities. Drop a message, I typically respond within 24 hours.
             </p>
 
-            <div className="flex items-center gap-3 mb-10 text-primary font-mono text-sm">
+            <div className="flex items-center gap-3 mb-10 text-brand font-mono text-sm">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary ring-4 ring-primary/20"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand ring-4 ring-brand/20"></span>
               </span>
               Available for work
             </div>
 
             <div className="flex flex-col gap-4">
-              <a href="mailto:muhammadmuttayab09@gmail.com" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-all hover:translate-x-1 w-fit group text-sm md:text-base">
-                <Mail size={18} className="group-hover:text-primary transition-colors" />
-                <span>muhammadmuttayab09@gmail.com</span>
+              <a href={`mailto:${profile.email}`} className="flex items-center gap-3 text-muted-foreground hover:text-brand transition-all hover:translate-x-1 w-fit group text-sm md:text-base">
+                <Mail size={18} className="group-hover:text-brand transition-colors" />
+                <span>{profile.email}</span>
               </a>
-              <a href="https://github.com/Muttayab99" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-all hover:translate-x-1 w-fit group text-sm md:text-base">
-                <Github size={18} className="group-hover:text-primary transition-colors" />
-                <span>github.com/Muttayab99</span>
+              <a href={profile.links.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-brand transition-all hover:translate-x-1 w-fit group text-sm md:text-base">
+                <Github size={18} className="group-hover:text-brand transition-colors" />
+                <span>{profile.links.github.replace(/^https?:\/\//, '')}</span>
               </a>
-              <a href="https://linkedin.com/in/m-muttayab" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-all hover:translate-x-1 w-fit group text-sm md:text-base">
-                <Linkedin size={18} className="group-hover:text-primary transition-colors" />
-                <span>linkedin.com/in/m-muttayab</span>
+              <a href={profile.links.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-brand transition-all hover:translate-x-1 w-fit group text-sm md:text-base">
+                <Linkedin size={18} className="group-hover:text-brand transition-colors" />
+                <span>{profile.links.linkedin.replace(/^https?:\/\//, '')}</span>
               </a>
             </div>
           </motion.div>
@@ -164,7 +165,7 @@ export const Contact = () => {
                   required
                   className={`w-full px-4 py-3 bg-muted border rounded-lg focus:outline-none focus:ring-1 transition-all ${errors.name
                       ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                      : 'border-border focus:border-primary focus:ring-primary focus:shadow-[0_0_0_3px_rgba(45,212,191,0.12)]'
+                      : 'border-border focus:border-brand focus:ring-brand focus:shadow-[0_0_0_3px_hsl(var(--brand)/0.2)]'
                     }`}
                   placeholder="Your name"
                   animate={errors.name ? { x: [-10, 10, -10, 10, 0] } : {}}
@@ -194,7 +195,7 @@ export const Contact = () => {
                   required
                   className={`w-full px-4 py-3 bg-muted border rounded-lg focus:outline-none focus:ring-1 transition-all ${errors.email
                       ? 'border-destructive focus:border-destructive focus:ring-destructive'
-                      : 'border-border focus:border-primary focus:ring-primary focus:shadow-[0_0_0_3px_rgba(45,212,191,0.12)]'
+                      : 'border-border focus:border-brand focus:ring-brand focus:shadow-[0_0_0_3px_hsl(var(--brand)/0.2)]'
                     }`}
                   placeholder="your@email.com"
                   animate={errors.email ? { x: [-10, 10, -10, 10, 0] } : {}}
@@ -226,8 +227,8 @@ export const Contact = () => {
                 required
                 rows={5}
                 className={`w-full px-4 py-3 bg-muted border rounded-lg focus:outline-none focus:ring-1 transition-all resize-none ${errors.message
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500 focus:ring-2'
-                    : 'border-border focus:border-primary focus:ring-primary focus:ring-2 focus:ring-offset-1 focus:ring-offset-background'
+                    ? 'border-destructive focus:border-destructive focus:ring-destructive'
+                    : 'border-border focus:border-brand focus:ring-brand focus:shadow-[0_0_0_3px_hsl(var(--brand)/0.2)]'
                   }`}
                 placeholder="Your message..."
                 animate={errors.message ? { x: [-10, 10, -10, 10, 0] } : {}}

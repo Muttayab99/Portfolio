@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, Heart } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
+import { profile } from '@/content/profile';
 
 const socialLinks = [
-  { icon: Github, href: 'https://github.com/Muttayab99', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://linkedin.com/in/m-muttayab', label: 'LinkedIn' },
-  { icon: Mail, href: 'mailto:muhammadmuttayab09@gmail.com', label: 'Email' },
+  { icon: Github, href: profile.links.github, label: 'GitHub', external: true },
+  { icon: Linkedin, href: profile.links.linkedin, label: 'LinkedIn', external: true },
+  { icon: Mail, href: `mailto:${profile.email}`, label: 'Email', external: false },
 ];
 
 export const Footer = () => {
@@ -18,9 +19,9 @@ export const Footer = () => {
               <motion.a
                 key={social.label}
                 href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                target={social.external ? '_blank' : undefined}
+                rel={social.external ? 'noopener noreferrer' : undefined}
+                className="text-muted-foreground hover:text-brand transition-colors"
                 aria-label={social.label}
                 whileHover={{ y: -2 }}
               >
@@ -36,11 +37,11 @@ export const Footer = () => {
             transition={{ delay: 0.5 }}
             className="w-full flex flex-col xl:flex-row justify-between items-center gap-4 xl:gap-0 text-[10px] sm:text-xs md:text-sm text-muted-foreground font-mono"
           >
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-1 sm:gap-2 hover:text-primary transition-colors text-center">
-              <span>© {new Date().getFullYear()} Muhammad Muttayab</span>
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-1 sm:gap-2 hover:text-brand transition-colors text-center">
+              <span>© {new Date().getFullYear()} {profile.name}</span>
               <span className="hidden sm:inline">·</span>
-              <a href="https://linkedin.com/in/m-muttayab" target="_blank" rel="noopener noreferrer">
-                linkedin.com/in/m-muttayab
+              <a href={profile.links.linkedin} target="_blank" rel="noopener noreferrer">
+                {profile.links.linkedin.replace(/^https?:\/\//, '')}
               </a>
             </div>
             

@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
+import { profile } from '@/content/profile';
 
 const navLinks = [
-  { name: 'About', href: '#about' },
-  { name: 'Stack', href: '#skills' },
-  { name: 'Experience', href: '#experience' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'About', href: '/#about' },
+  { name: 'Stack', href: '/#skills' },
+  { name: 'Experience', href: '/#experience' },
+  { name: 'Projects', href: '/#projects' },
+  { name: 'Contact', href: '/#contact' },
 ];
+
+const MotionLink = motion.create(Link);
 
 export const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -33,7 +37,7 @@ export const Navigation = () => {
   return (
     <>
       <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-primary z-[60] origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-brand z-[60] origin-left"
         style={{ scaleX }}
       />
       <motion.header
@@ -46,33 +50,34 @@ export const Navigation = () => {
           isScrolled ? 'md:py-2.5 shadow-xl' : ''
         }`}>
           {/* Logo */}
-          <motion.a
-            href="#"
+          <MotionLink
+            to="/"
+            aria-label="Home"
             className="flex items-baseline text-2xl font-bold font-heading text-foreground shrink-0 md:pl-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            MM<span className="text-foreground text-3xl leading-none">.</span>
-          </motion.a>
+            {profile.initials}<span className="text-foreground text-3xl leading-none">.</span>
+          </MotionLink>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link, index) => (
-              <motion.a
+              <MotionLink
                 key={link.name}
-                href={link.href}
+                to={link.href}
                 className="text-[15px] font-medium text-muted-foreground hover:text-foreground transition-colors"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index + 0.3 }}
               >
                 {link.name}
-              </motion.a>
+              </MotionLink>
             ))}
             <div className="flex items-center gap-4">
               <ThemeToggle />
               <motion.a
-                href="/Muhammad_Muttayab_CV.pdf"
+                href={profile.cvPath}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-foreground text-background px-7 py-3 rounded-full text-[15px] font-semibold hover:bg-foreground/90 transition-colors shadow-sm tracking-wide"
@@ -94,6 +99,8 @@ export const Navigation = () => {
               className="p-2 text-foreground rounded-full hover:bg-muted transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               whileTap={{ scale: 0.9 }}
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </motion.button>
@@ -123,9 +130,9 @@ export const Navigation = () => {
             >
               <nav className="flex flex-col gap-6">
                 {navLinks.map((link, index) => (
-                  <motion.a
+                  <MotionLink
                     key={link.name}
-                    href={link.href}
+                    to={link.href}
                     className="text-lg font-medium text-muted-foreground hover:text-foreground transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                     initial={{ opacity: 0, x: 20 }}
@@ -133,10 +140,10 @@ export const Navigation = () => {
                     transition={{ delay: 0.1 * index }}
                   >
                     {link.name}
-                  </motion.a>
+                  </MotionLink>
                 ))}
                 <motion.a
-                  href="/Muhammad_Muttayab_CV.pdf"
+                  href={profile.cvPath}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-foreground text-background rounded-full px-6 py-3 font-semibold text-center mt-6 tracking-wide"

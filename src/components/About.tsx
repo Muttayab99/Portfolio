@@ -1,19 +1,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { MapPin, GraduationCap, Award } from 'lucide-react';
-
-const highlights = [
-  { icon: MapPin, label: 'Location', value: 'Lahore, Pakistan' },
-  { icon: GraduationCap, label: 'Education', value: 'BS Data Science @ FAST NUCES' },
-  { icon: Award, label: 'Achievement', value: 'Hackathon Winner' },
-];
-
-const technologies = [
-  'FastAPI / Production APIs', 'PyTorch', 'Computer Vision (SAM3, OpenCV)',
-  'LangChain / LangGraph', 'AWS (EC2, SQS, S3)', 'PaddleOCR / Document AI',
-  'Multi-Agent Systems', 'Azure / Databricks', 'SQL & NoSQL'
-];
+import { profile } from '@/content/profile';
 
 export const About = () => {
   const ref = useRef(null);
@@ -30,42 +18,45 @@ export const About = () => {
         >
           {/* Section Header */}
           <div className="flex items-center gap-4 mb-12">
-            <h2 className="section-heading">
-
-              About Me
-            </h2>
+            <h2 className="section-heading">About Me</h2>
             <div className="flex-1 h-px bg-border max-w-xs" />
           </div>
 
-          <div className="max-w-3xl space-y-4">
-            {/* Main Content */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.2 }}
-              className="text-base md:text-lg text-muted-foreground leading-relaxed"
+          <div className="grid md:grid-cols-[minmax(0,240px)_1fr] lg:grid-cols-[minmax(0,300px)_1fr] gap-10 lg:gap-16 items-start">
+            {/* Photo (moved here from the hero) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, rotate: -3 }}
+              animate={isInView ? { opacity: 1, scale: 1, rotate: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.15, type: 'spring', stiffness: 110 }}
+              className="relative w-full max-w-[240px] md:max-w-none mx-auto md:mx-0 md:sticky md:top-32"
             >
-              I am an <span className="text-primary">AI Engineer</span> and{' '}
-              <span className="text-primary">Data Scientist</span> who builds AI systems that
-              actually ship to production, not just notebooks. My work sits at the
-              intersection of computer vision, LLM orchestration, and the data
-              infrastructure that holds it all together.
-            </motion.p>
+              <div className="aspect-square rounded-2xl overflow-hidden glass-card relative z-10 hover:border-brand/50 transition-colors duration-500">
+                <img
+                  src="/profile.jpg"
+                  alt={profile.name}
+                  width={800}
+                  height={800}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-brand/10 mix-blend-overlay hover:opacity-0 transition-opacity duration-500 pointer-events-none" />
+              </div>
+              <div className="absolute -z-10 top-5 -right-5 w-full h-full rounded-2xl border-2 border-zinc-500/30" />
+            </motion.div>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 }}
-              className="text-base md:text-lg text-muted-foreground leading-relaxed"
-            >
-              I'm currently <span className="text-primary">AI Engineer & Project Lead at
-              Neuralogic</span>, where I fine-tuned an 848M-parameter SAM3 model for
-              automated construction cost estimation and now lead a second workstream
-              building GenAI-powered contract automation for MEP estimation. Before
-              this, I architected a multi-agent competitor analysis system at SAynt AI
-              (Asyncio, 15+ SEMrush endpoints, AWS SQS/S3), and built RAG pipelines
-              with LangChain and LangGraph as a Gen-AI intern at Addo AI.
-            </motion.p>
+            <div className="space-y-4">
+            {/* Main Content */}
+            {profile.about.map((paragraph, i) => (
+              <motion.p
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.2 + i * 0.1 }}
+                className="text-base md:text-lg text-muted-foreground leading-relaxed"
+              >
+                {paragraph}
+              </motion.p>
+            ))}
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -83,21 +74,18 @@ export const About = () => {
               transition={{ delay: 0.5 }}
               className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4"
             >
-              {technologies.map((tech, index) => (
+              {profile.recentTech.map((tech) => (
                 <li
                   key={tech}
                   className="text-base text-muted-foreground flex items-center gap-2"
                 >
-                  <span className="text-primary">▹</span>
+                  <span className="text-brand">▹</span>
                   {tech}
                 </li>
               ))}
             </motion.ul>
           </div>
-
-
-
-
+          </div>
         </motion.div>
       </div>
     </section>

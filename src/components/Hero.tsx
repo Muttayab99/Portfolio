@@ -1,140 +1,152 @@
-import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { Github, Linkedin, Mail, ChevronDown } from 'lucide-react';
-import { useEffect } from 'react';
-import { AmbientGlow } from './AmbientGlow';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Github, Linkedin, Mail, ChevronDown, ArrowRight } from 'lucide-react';
+import { HeroBackground } from './HeroBackground';
+import { Magnetic } from './Magnetic';
+import { profile } from '@/content/profile';
 
 const socialLinks = [
-  { icon: Github, href: 'https://github.com/Muttayab99', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://linkedin.com/in/m-muttayab', label: 'LinkedIn' },
-  { icon: Mail, href: '#contact', label: 'Email' },
+  { icon: Github, href: profile.links.github, label: 'GitHub', external: true },
+  { icon: Linkedin, href: profile.links.linkedin, label: 'LinkedIn', external: true },
+  { icon: Mail, href: `mailto:${profile.email}`, label: 'Email', external: false },
 ];
 
+const rise = (delay: number) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, delay },
+});
+
+/** Name with a one-time per-character reveal. Screen readers get the plain string. */
+const StaggeredName = ({ text, className, delay }: { text: string; className?: string; delay: number }) => {
+  const reduce = useReducedMotion();
+  if (reduce) return <span className={className}>{text}</span>;
+  return (
+    <span className={className}>
+      <span className="sr-only">{text}</span>
+      {Array.from(text).map((ch, i) => (
+        <motion.span
+          key={i}
+          aria-hidden
+          className="inline-block"
+          initial={{ opacity: 0, y: '0.35em', filter: 'blur(4px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          transition={{ duration: 0.45, delay: delay + i * 0.035, ease: [0.2, 0.65, 0.3, 1] }}
+        >
+          {ch === ' ' ? String.fromCharCode(160) : ch}
+        </motion.span>
+      ))}
+    </span>
+  );
+};
+
 export const Hero = () => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  const x1 = useTransform(mouseX, [0, window.innerWidth], [-20, 20]);
-  const y1 = useTransform(mouseY, [0, window.innerHeight], [-20, 20]);
-  const x2 = useTransform(mouseX, [0, window.innerWidth], [20, -20]);
-  const y2 = useTransform(mouseY, [0, window.innerHeight], [20, -20]);
+  const reduce = useReducedMotion();
 
   return (
     <section className="hero min-h-screen flex flex-col justify-center relative overflow-hidden bg-background">
-      <AmbientGlow />
-      <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
+      {/* ---- Backdrop: globe canvas + grid + readability gradients ---- */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <HeroBackground className="absolute inset-0 opacity-85" />
 
-      <div className="container mx-auto px-6 lg:px-12 relative z-10 mt-20 lg:mt-0">
-        <div className="flex flex-col-reverse lg:flex-row items-center justify-center gap-16 lg:gap-[12vw] xl:gap-[15vw]">
-          <div className="max-w-xl lg:max-w-[45vw]">
-            {/* Status Line */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex items-center gap-2 font-mono text-xs tracking-wider text-primary mb-6 uppercase"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              OPEN TO WORK
-              <span className="mx-2 text-muted-foreground">•</span>
-              LAHORE <span className="mx-1">↔</span> REMOTE
-            </motion.div>
+        {/* Fine grid, only visible near the text block */}
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              'linear-gradient(hsl(var(--foreground) / 0.12) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground) / 0.12) 1px, transparent 1px), linear-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground) / 0.05) 1px, transparent 1px)',
+            backgroundSize: '96px 96px, 96px 96px, 24px 24px, 24px 24px',
+            maskImage: 'radial-gradient(ellipse 70% 75% at 24% 58%, black 0%, rgba(0,0,0,0.8) 45%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 70% 75% at 24% 58%, black 0%, rgba(0,0,0,0.8) 45%, transparent 100%)',
+          }}
+        />
 
-            {/* Role Tag */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="text-muted-foreground font-mono text-sm md:text-base mb-4 tracking-widest uppercase"
-            >
-              AI Engineer · Data Scientist
-            </motion.p>
+        {/* Darken the left edge (text) and fade the bottom into the page */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 via-40% to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 via-30% to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-background/70 to-transparent" />
+      </div>
 
-            {/* Name */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="text-4xl lg:text-[3.5vw] leading-tight font-bold font-heading mb-4 tracking-tight whitespace-nowrap"
-            >
-              <span className="text-foreground">Muhammad</span> <span className="text-muted-foreground font-serif italic font-normal">Muttayab.</span>
-            </motion.h1>
+      {/* ---- Content ---- */}
+      <div className="container mx-auto px-6 lg:pl-24 lg:pr-12 xl:pl-28 relative z-10 mt-24 lg:mt-0">
+        <div className="max-w-2xl xl:max-w-3xl">
+          {/* Status Line */}
+          <motion.div
+            {...rise(0.4)}
+            className="flex items-center gap-2 font-mono text-xs tracking-wider text-brand mb-6 uppercase"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            {profile.availability}
+            <span className="mx-2 text-muted-foreground">•</span>
+            {profile.location.split(',')[0]} <span className="mx-1">↔</span> Remote
+          </motion.div>
 
-            {/* Subhead */}
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-2xl md:text-3xl lg:text-[2.2vw] font-bold font-heading text-muted-foreground mb-10 leading-tight"
-            >
-              I build intelligent systems that ship ROI.
-            </motion.h2>
+          {/* Role Tag */}
+          <motion.p
+            {...rise(0.5)}
+            className="text-muted-foreground font-mono text-sm md:text-base mb-4 tracking-widest uppercase"
+          >
+            {profile.role.replace('&', '·')}
+          </motion.p>
 
-            {/* Company Social Proof */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="flex items-center gap-4 text-sm font-mono text-muted-foreground mb-10 tracking-widest uppercase"
-            >
-              <span>NEURALOGIC</span>
-              <span>•</span>
-              <span>SYSTEMS LTD</span>
-              <span>•</span>
-              <span>ADDO AI</span>
-            </motion.div>
+          {/* Greeting */}
+          <motion.p {...rise(0.55)} className="font-mono text-base md:text-lg text-brand mb-3">
+            Hi, it's me
+          </motion.p>
 
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.9 }}
-              className="flex flex-wrap gap-4 mb-12 lg:mb-0"
-            >
-              <motion.a
+          {/* Name — stacked, big, like a masthead */}
+          <h1 className="font-heading font-bold tracking-tight leading-[0.95] mb-6 text-5xl sm:text-6xl lg:text-[5.2rem] xl:text-[6rem]">
+            <span className="block">
+              <StaggeredName text={profile.firstName} className="text-foreground" delay={0.55} />
+            </span>
+            <span className="block">
+              <StaggeredName
+                text={`${profile.lastName}.`}
+                className="text-muted-foreground font-serif italic font-normal"
+                delay={0.55 + profile.firstName.length * 0.035}
+              />
+            </span>
+          </h1>
+
+          {/* Headline */}
+          <motion.h2
+            {...rise(0.9)}
+            className="text-2xl md:text-3xl font-bold font-heading text-muted-foreground mb-8 leading-tight max-w-xl"
+          >
+            {profile.headline}
+          </motion.h2>
+
+          {/* Company Social Proof */}
+          <motion.div
+            {...rise(1.05)}
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-mono text-muted-foreground mb-10 tracking-widest uppercase"
+          >
+            {profile.workedWith.map((name, i) => (
+              <span key={name} className="flex items-center gap-4">
+                {i > 0 && <span aria-hidden>•</span>}
+                {name}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div {...rise(1.15)} className="flex flex-wrap gap-4">
+            <Magnetic>
+              <a
                 href="#projects"
-                className="bg-primary text-primary-foreground rounded-full py-3 px-7 font-semibold hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)] dark:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="group inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full py-3 px-7 font-semibold hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)] dark:shadow-[0_0_15px_rgba(255,255,255,0.3)]"
               >
-                See the work →
-              </motion.a>
-              <motion.a
+                See the work
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+              </a>
+            </Magnetic>
+            <Magnetic>
+              <a
                 href="#contact"
-                className="px-6 md:px-8 py-3 md:py-4 rounded-full text-sm font-semibold border-2 border-foreground/20 hover:border-foreground/50 text-foreground bg-transparent transition-all hover:bg-muted"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center px-6 md:px-8 py-3 rounded-full text-sm font-semibold border-2 border-foreground/20 hover:border-foreground/50 text-foreground bg-background/40 backdrop-blur-sm transition-all hover:bg-muted"
               >
                 Get in touch
-              </motion.a>
-            </motion.div>
-          </div>
-
-          {/* Profile Image Section */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 0.7, delay: 1.2, type: 'spring', stiffness: 100 }}
-            className="w-full max-w-[240px] sm:max-w-[260px] lg:max-w-none lg:w-[20vw] xl:w-[18vw] relative mt-10 lg:mt-0 shrink-0"
-          >
-            <div className="aspect-square rounded-2xl overflow-hidden glass-card relative z-10 hover:border-primary/50 transition-colors duration-500">
-              <img 
-                src="/profile.jpg" 
-                alt="Muhammad Muttayab" 
-                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-primary/10 mix-blend-overlay hover:opacity-0 transition-opacity duration-500 pointer-events-none" />
-            </div>
-            {/* Decorative back-border */}
-            <div className="absolute -z-10 top-6 -right-6 w-full h-full rounded-2xl border-2 border-zinc-500/30" />
+              </a>
+            </Magnetic>
           </motion.div>
         </div>
       </div>
@@ -142,9 +154,10 @@ export const Hero = () => {
       {/* Scroll Indicator */}
       <motion.a
         href="#about"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground hover:text-primary transition-colors"
+        aria-label="Scroll to About"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground hover:text-brand transition-colors z-10"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 10, 0] }}
+        animate={{ opacity: 1, y: reduce ? 0 : [0, 10, 0] }}
         transition={{
           opacity: { delay: 1.5 },
           y: { repeat: Infinity, duration: 2 },
@@ -158,14 +171,14 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="fixed right-6 xl:right-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-primary/30"
+        className="fixed right-6 xl:right-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-brand/30 z-10"
       >
         <a
-          href="mailto:muhammadmuttayab09@gmail.com"
-          className="font-mono text-xs tracking-[0.2em] text-muted-foreground hover:text-primary hover:-translate-y-2 transition-all duration-300 py-4"
+          href={`mailto:${profile.email}`}
+          className="font-mono text-xs tracking-[0.2em] text-muted-foreground hover:text-brand hover:-translate-y-2 transition-all duration-300 py-4"
           style={{ writingMode: 'vertical-rl' }}
         >
-          muhammadmuttayab09@gmail.com
+          {profile.email}
         </a>
       </motion.div>
 
@@ -174,19 +187,19 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="fixed left-6 xl:left-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-primary/30"
+        className="fixed left-6 xl:left-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-brand/30 z-10"
       >
         {socialLinks.map((social) => (
-          <motion.a
+          <a
             key={social.label}
             href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary hover:-translate-y-2 transition-all duration-300 p-2"
+            target={social.external ? '_blank' : undefined}
+            rel={social.external ? 'noopener noreferrer' : undefined}
+            className="text-muted-foreground hover:text-brand hover:-translate-y-2 transition-all duration-300 p-2"
             aria-label={social.label}
           >
             <social.icon size={22} />
-          </motion.a>
+          </a>
         ))}
       </motion.div>
     </section>

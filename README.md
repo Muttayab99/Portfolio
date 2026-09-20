@@ -1,73 +1,43 @@
-# Welcome to your Lovable project
+# Muhammad Muttayab — Portfolio
 
-## Project info
+Personal portfolio for Muhammad Muttayab, AI Engineer & Data Scientist. Live at [muttayab.dev](https://muttayab.dev).
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack
 
-## How can I edit this code?
+- [Vite](https://vitejs.dev) + [React 18](https://react.dev) + TypeScript
+- [Tailwind CSS](https://tailwindcss.com) with a small set of [shadcn/ui](https://ui.shadcn.com) primitives (`src/components/ui`)
+- [Framer Motion](https://www.framer.com/motion/) for animation
+- [Formspree](https://formspree.io) for the contact form
+- "Ask about my work": BM25 retrieval over `src/content` + [Groq](https://groq.com) (`openai/gpt-oss-120b`) behind a Vercel Edge Function (`api/chat.ts`)
+- Deployed on Vercel
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Development
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm install
+cp .env.example .env.local   # then set GROQ_API_KEY (server-side only; never VITE_-prefixed)
+npm run dev        # http://localhost:8080  (/api/chat is served by a dev middleware in vite.config.ts)
+npm run typecheck  # tsc
+npm run lint       # eslint
+npm run build      # production build -> dist/
 ```
 
-**Edit a file directly in GitHub**
+## Layout
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+api/chat.ts              # Edge function: retrieval + streamed Groq answer (needs GROQ_API_KEY)
+src/
+  content/               # ALL site copy as typed data: profile, experience, projects (+ case studies), skills
+  content/knowledge.ts   # flattens content into chunks + BM25 retrieval, shared with api/chat.ts
+  pages/Index.tsx        # home: Hero + lazy-loaded sections
+  pages/ProjectPage.tsx  # /projects/:slug case-study pages
+  components/            # one file per section, AskMe (chat), Magnetic, ScrollManager
+  components/case-study/ # PipelineDiagram
+  components/ui/         # shadcn primitives actually used by the site
+  index.css              # theme tokens (light/dark) + the few global component classes
+public/                  # profile image, CV, robots/sitemap
+```
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+To change any copy, edit `src/content/*`. Adding a `caseStudy` to a project in `projects.ts` automatically
+creates its `/projects/<slug>` page, links it from the Experience/Projects sections and feeds the assistant.
+Set `GROQ_API_KEY` in Vercel → Settings → Environment Variables for production.
