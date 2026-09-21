@@ -10,10 +10,9 @@ export const CursorEffect = () => {
     const x = useMotionValue(-100);
     const y = useMotionValue(-100);
 
-    const dotX = useSpring(x, { damping: 28, stiffness: 800, mass: 0.5 });
-    const dotY = useSpring(y, { damping: 28, stiffness: 800, mass: 0.5 });
-    const ringX = useSpring(x, { damping: 30, stiffness: 400, mass: 0.8 });
-    const ringY = useSpring(y, { damping: 30, stiffness: 400, mass: 0.8 });
+    // Dot is bound straight to the pointer (zero lag); only the ring trails.
+    const ringX = useSpring(x, { damping: 40, stiffness: 900, mass: 0.4 });
+    const ringY = useSpring(y, { damping: 40, stiffness: 900, mass: 0.4 });
 
     useEffect(() => {
         const move = (e: MouseEvent) => {
@@ -29,14 +28,14 @@ export const CursorEffect = () => {
             {/* Main cursor dot */}
             <motion.div
                 aria-hidden
-                className="custom-cursor fixed top-0 left-0 w-4 h-4 -ml-2 -mt-2 bg-brand/80 dark:bg-brand/50 rounded-full pointer-events-none z-[999] mix-blend-multiply dark:mix-blend-screen"
-                style={{ x: dotX, y: dotY }}
+                className="custom-cursor fixed top-0 left-0 w-3 h-3 -ml-1.5 -mt-1.5 bg-brand rounded-full pointer-events-none z-[999] will-change-transform"
+                style={{ x, y }}
             />
 
             {/* Trailing cursor ring */}
             <motion.div
                 aria-hidden
-                className="custom-cursor fixed top-0 left-0 w-8 h-8 -ml-4 -mt-4 border-2 border-brand/60 dark:border-brand/30 rounded-full pointer-events-none z-[999]"
+                className="custom-cursor fixed top-0 left-0 w-8 h-8 -ml-4 -mt-4 border-2 border-brand/50 rounded-full pointer-events-none z-[999] will-change-transform"
                 style={{ x: ringX, y: ringY }}
             />
         </>

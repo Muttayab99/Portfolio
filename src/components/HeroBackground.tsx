@@ -152,7 +152,7 @@ export const HeroBackground = ({ className = '' }: { className?: string }) => {
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       width = rect.width;
       height = rect.height;
       canvas.width = Math.round(width * dpr);
@@ -268,23 +268,25 @@ export const HeroBackground = ({ className = '' }: { className?: string }) => {
       }
     };
 
-    // Adaptive rate: if a frame costs more than ~10ms (weak GPU / software
-    // canvas), render every other rAF. The rotation is slow enough that 30fps
-    // is indistinguishable.
+    // Render at ~30 fps: the rotation is slow enough (1 rev / 105 s) that 60 fps
+    // is indistinguishable, and this halves the GPU/raster cost on laptops. If a
+    // frame is still expensive (>12 ms, software canvas), drop to ~20 fps.
+    const FRAME_MS = 1000 / 30;
     let costAvg = 4;
-    let skip = false;
+    let acc = 0;
     const frame = (now: number) => {
       raf = 0;
       if (!running || !visible) return;
       if (!reduce) raf = requestAnimationFrame(frame);
-      if (skip) { skip = false; return; }
       const dt = Math.min(64, now - last);
       last = now;
-      if (!reduce) angle += dt * 0.00006; // ~1 rev / 105 s
+      acc += dt;
+      if (!reduce && acc < (costAvg > 12 ? FRAME_MS * 1.5 : FRAME_MS)) return;
+      if (!reduce) angle += acc * 0.00006; // ~1 rev / 105 s
       const t0 = performance.now();
-      draw(dt);
+      draw(acc);
+      acc = 0;
       costAvg = costAvg * 0.9 + (performance.now() - t0) * 0.1;
-      if (costAvg > 10) skip = true;
     };
 
     const start = () => {

@@ -28,9 +28,9 @@ const StaggeredName = ({ text, className, delay }: { text: string; className?: s
           key={i}
           aria-hidden
           className="inline-block"
-          initial={{ opacity: 0, y: '0.35em', filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.45, delay: delay + i * 0.035, ease: [0.2, 0.65, 0.3, 1] }}
+          initial={{ opacity: 0, y: '0.35em' }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: delay + i * 0.025, ease: [0.2, 0.65, 0.3, 1] }}
         >
           {ch === ' ' ? String.fromCharCode(160) : ch}
         </motion.span>
@@ -71,7 +71,7 @@ export const Hero = () => {
         <div className="max-w-2xl xl:max-w-3xl">
           {/* Status Line */}
           <motion.div
-            {...rise(0.4)}
+            {...rise(0.1)}
             className="flex items-center gap-2 font-mono text-xs tracking-wider text-brand mb-6 uppercase"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -82,34 +82,34 @@ export const Hero = () => {
 
           {/* Role Tag */}
           <motion.p
-            {...rise(0.5)}
+            {...rise(0.18)}
             className="text-muted-foreground font-mono text-sm md:text-base mb-4 tracking-widest uppercase"
           >
             {profile.role.replace('&', '·')}
           </motion.p>
 
           {/* Greeting */}
-          <motion.p {...rise(0.55)} className="font-mono text-base md:text-lg text-brand mb-3">
+          <motion.p {...rise(0.24)} className="font-mono text-base md:text-lg text-brand mb-3">
             Hi, it's me
           </motion.p>
 
           {/* Name — stacked, big, like a masthead */}
           <h1 className="font-heading font-bold tracking-tight leading-[0.95] mb-6 text-5xl sm:text-6xl lg:text-[5.2rem] xl:text-[6rem]">
             <span className="block">
-              <StaggeredName text={profile.firstName} className="text-foreground" delay={0.55} />
+              <StaggeredName text={profile.firstName} className="text-foreground" delay={0.3} />
             </span>
             <span className="block">
               <StaggeredName
                 text={`${profile.lastName}.`}
                 className="text-muted-foreground font-serif italic font-normal"
-                delay={0.55 + profile.firstName.length * 0.035}
+                delay={0.3 + profile.firstName.length * 0.025}
               />
             </span>
           </h1>
 
           {/* Headline */}
           <motion.h2
-            {...rise(0.9)}
+            {...rise(0.55)}
             className="text-2xl md:text-3xl font-bold font-heading text-muted-foreground mb-8 leading-tight max-w-xl"
           >
             {profile.headline}
@@ -117,7 +117,7 @@ export const Hero = () => {
 
           {/* Company Social Proof */}
           <motion.div
-            {...rise(1.05)}
+            {...rise(0.65)}
             className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-mono text-muted-foreground mb-10 tracking-widest uppercase"
           >
             {profile.workedWith.map((name, i) => (
@@ -129,7 +129,7 @@ export const Hero = () => {
           </motion.div>
 
           {/* CTA Buttons */}
-          <motion.div {...rise(1.15)} className="flex flex-wrap gap-4">
+          <motion.div {...rise(0.75)} className="flex flex-wrap gap-4">
             <Magnetic>
               <a
                 href="#projects"
@@ -142,7 +142,7 @@ export const Hero = () => {
             <Magnetic>
               <a
                 href="#contact"
-                className="inline-flex items-center px-6 md:px-8 py-3 rounded-full text-sm font-semibold border-2 border-foreground/20 hover:border-foreground/50 text-foreground bg-background/40 backdrop-blur-sm transition-all hover:bg-muted"
+                className="inline-flex items-center px-6 md:px-8 py-3 rounded-full text-sm font-semibold border-2 border-foreground/20 hover:border-foreground/50 text-foreground bg-background/40 transition-all hover:bg-muted"
               >
                 Get in touch
               </a>
@@ -159,7 +159,7 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: reduce ? 0 : [0, 10, 0] }}
         transition={{
-          opacity: { delay: 1.5 },
+          opacity: { delay: 1.0 },
           y: { repeat: Infinity, duration: 2 },
         }}
       >
@@ -170,7 +170,7 @@ export const Hero = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1.0 }}
         className="fixed right-6 xl:right-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-brand/30 z-10"
       >
         <a
@@ -186,7 +186,7 @@ export const Hero = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1.0 }}
         className="fixed left-6 xl:left-10 bottom-0 hidden lg:flex flex-col items-center gap-4 after:content-[''] after:w-px after:h-16 lg:after:h-24 after:bg-brand/30 z-10"
       >
         {socialLinks.map((social) => (

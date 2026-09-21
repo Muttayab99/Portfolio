@@ -46,7 +46,7 @@ export const Navigation = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="fixed top-6 left-1/2 z-50 w-[95%] md:w-auto"
       >
-        <nav className={`flex items-center justify-between gap-6 md:gap-14 px-5 md:px-5 md:pr-4 py-3.5 transition-all duration-300 rounded-full bg-zinc-200/90 dark:bg-zinc-800/80 backdrop-blur-md shadow-lg border border-zinc-300/50 dark:border-zinc-700/50 ${
+        <nav className={`flex items-center justify-between gap-6 md:gap-14 px-5 md:px-5 md:pr-4 py-3.5 transition-all duration-300 rounded-full bg-zinc-200/95 dark:bg-zinc-800/95 shadow-lg border border-zinc-300/50 dark:border-zinc-700/50 ${
           isScrolled ? 'md:py-2.5 shadow-xl' : ''
         }`}>
           {/* Logo */}
