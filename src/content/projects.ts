@@ -12,7 +12,7 @@ export interface CaseStudy {
   approach: string[];
   /** Ordered stages rendered as a flow diagram. */
   pipeline: PipelineStage[];
-  /** Hard facts worth calling out. Keep these truthful; add numbers only when measured. */
+  /** Hard facts worth calling out. Keep these truthful; add numbers only when measured. Empty hides the row. */
   highlights: { value: string; label: string }[];
   outcomes: string[];
   learnings: string[];
@@ -23,6 +23,8 @@ export interface Project {
   title: string;
   /** Short line under the title on cards. */
   tagline: string;
+  /** Plain-language one-liner for featured cards: what it does, for whom. No jargon. */
+  summary?: string;
   description: string;
   tech: string[];
   github?: string;
@@ -40,46 +42,193 @@ export const projects: Project[] = [
     slug: 'vesta',
     title: 'Vesta',
     tagline: 'Automated concrete takeoffs from architectural plans',
+    summary:
+      'Reads a construction plan set and returns a priced concrete takeoff: what is on each sheet, how much of it, and what it costs.',
     org: 'Neuralogic',
     year: '2026',
     description:
-      'Engineered an AI system for automated concrete takeoffs and cost estimation on architectural plans. Developed a computer vision pipeline by fine-tuning SAM3 (848M parameters) on AWS EC2 for precise element segmentation, managed via Roboflow. Integrated PaddleOCR and Google Vertex AI to extract structured data, exposing the inference pipeline through a robust production-grade FastAPI service.',
-    tech: ['SAM3', 'PyTorch', 'PaddleOCR', 'Vertex AI', 'FastAPI', 'Roboflow', 'AWS EC2'],
+      'Engineered an AI system for automated concrete takeoffs and cost estimation on architectural plans. A fine-tuned SAM3 model (848M parameters) segments materials on 300-DPI plan renders, a three-path scale calibrator converts pixels to square feet, PaddleOCR reads legends, and Gemini on Vertex AI matches legends and materials to a price database, returning priced Excel and Word reports plus an annotated PDF. Runs as four FastAPI microservices on a single GPU instance on AWS.',
+    tech: ['SAM3', 'PyTorch', 'Roboflow', 'PaddleOCR', 'Gemini (Vertex AI)', 'FastAPI', 'PostgreSQL', 'AWS EC2 / S3'],
     type: ['ai'],
     featured: true,
     caseStudy: {
-      context: 'Built at Neuralogic as AI Engineer & Project Lead, 2026.',
+      context: 'Built at Neuralogic as an AI Engineer, 2026.',
       problem:
-        'Construction estimators produce "takeoffs" by reading architectural plans and manually counting and measuring every concrete element (footings, columns, slabs, walls). It is slow, error-prone, and the bottleneck for every bid. The goal was a system that ingests a plan set and returns structured, priced quantities with minimal human correction.',
+        'Construction estimators produce "takeoffs" by reading architectural plans and manually counting and measuring every concrete element (footings, columns, slabs, walls, paving). It is slow, error-prone, and the bottleneck for every bid. The goal was a system that ingests a plan set and returns structured, priced quantities with minimal human correction.',
       approach: [
-        'Treated it as a segmentation problem rather than detection: estimators need areas and lengths, not bounding boxes. Fine-tuned SAM3 (848M parameters) on a custom, in-domain dataset of annotated plan sheets.',
+        'Treated it as a segmentation problem rather than detection: estimators need areas, not bounding boxes. A Roboflow detector finds candidate regions, then a fine-tuned SAM3 (848M parameters) segments each page in 1008 px tiles that are merged back into one annotated sheet with per-material areas.',
         'Ran training on a single AWS EC2 instance with 80 GB of VRAM; managed the dataset, versioning and annotation QA through Roboflow so the ground truth stayed consistent as the labelling team grew.',
-        'Segmentation alone is not a takeoff. Layered PaddleOCR over the plan text to read dimensions, labels and schedules, and used Google Vertex AI to turn the raw OCR output into structured cost line items.',
-        'Wrapped everything in a FastAPI service with two surfaces: prediction endpoints for the estimation app, and annotation-management endpoints so corrections from estimators flow back into the training set.',
+        'Pixels are not square feet. Built a three-path scale calibrator: a manual two-point reference when the estimator supplies one; otherwise vector-PDF parsing of scale labels (such as 1" = 20\'-0"), scale bars and title blocks; and for raster scans, PaddleOCR over the title strip with the same parsers.',
+        'Segmentation alone is not a takeoff. PaddleOCR reads the plan legends, Gemini on Vertex AI extracts legend entries and maps them to segmented material classes, then matches each material area to the price database to produce quantity, unit price and total.',
+        'Built a separate pricing service so contractors keep that database current: they upload their own Excel price sheets, and a multi-pass Gemini pipeline (identify relevant sheets, extract, verify against the source, de-duplicate, filter by confidence) turns them into structured material prices.',
+        'Split the system into four FastAPI services on one GPU instance: the AI pipeline; an OCR service in its own environment, because PaddlePaddle and PyTorch need conflicting CUDA libraries; a user-facing API with JWT auth, jobs and S3 presigned downloads; and the pricing service. A scheduled job purges expired jobs and their S3 files, and GitHub Actions deploys over SSH.',
       ],
       pipeline: [
-        { label: 'Plan sheets', detail: 'PDF / raster architectural drawings' },
-        { label: 'SAM3 (fine-tuned)', detail: 'Element masks: footings, columns, slabs, walls' },
-        { label: 'PaddleOCR', detail: 'Dimensions, labels, schedules' },
-        { label: 'Vertex AI', detail: 'Normalise OCR into structured quantities' },
-        { label: 'FastAPI', detail: 'Prediction + annotation endpoints' },
-        { label: 'Estimate', detail: 'Priced, reviewable takeoff' },
+        { label: 'Plan PDF', detail: 'Rendered at 300 DPI' },
+        { label: 'Scale calibration', detail: 'Manual · vector · OCR fallback' },
+        { label: 'Detect + SAM3', detail: 'Tiled material segmentation' },
+        { label: 'PaddleOCR', detail: 'Legends and plan text' },
+        { label: 'Gemini matching', detail: 'Legends → materials → prices' },
+        { label: 'Reports', detail: 'Excel, Word, annotated PDF' },
       ],
       highlights: [
         { value: '848M', label: 'SAM3 parameters fine-tuned' },
-        { value: '80 GB', label: 'VRAM on the training instance' },
-        { value: '2', label: 'workstreams led (concrete, MEP)' },
+        { value: '4', label: 'microservices on one GPU instance' },
+        { value: '3', label: 'scale-calibration paths: manual, vector, OCR' },
       ],
       outcomes: [
         'Precise element segmentation on real plan sheets, replacing manual counting for the concrete scope.',
-        'Manual estimation effort reduced significantly; estimators now review and correct instead of measuring from scratch.',
+        'Each job returns a priced takeoff as Excel and Word reports plus an annotated PDF, so estimators review and correct instead of measuring from scratch.',
+        'Contractors maintain their own pricing by uploading the spreadsheets they already use, with no manual data entry.',
         'Corrections loop back into training data through the annotation endpoints, so accuracy improves with use.',
-        'Now leading a second workstream extending the approach to MEP (mechanical, electrical, plumbing) plans, plus a GenAI module that drafts and reviews construction contracts.',
       ],
       learnings: [
         'Annotation quality dominated model quality. Time spent on labelling guidelines and QA paid back more than any architecture change.',
-        'OCR on drawings is a different problem from OCR on documents: rotated text, overlapping dimension lines and tiny fonts needed their own preprocessing.',
-        'Shipping the annotation-management API early turned estimators into a data flywheel instead of a QA burden.',
+        'Scale is the silent failure mode: a perfect mask with the wrong pixels-per-foot is a wrong estimate. Reading vector geometry first and OCR only as a fallback made calibration trustworthy.',
+        'OCR on drawings is a different problem from OCR on documents: rotated text, overlapping dimension lines and tiny fonts needed their own preprocessing, and its own service.',
+      ],
+    },
+  },
+  {
+    slug: 'mep-takeoff',
+    title: 'MEP Takeoff',
+    tagline: 'Plumbing & mechanical takeoffs: VLM triage, symbol detection, assembly pricing',
+    summary:
+      'Counts every plumbing fixture, valve and pipe run in a drawing set and prices it, so estimators review a takeoff instead of building one.',
+    org: 'Neuralogic',
+    year: '2026',
+    description:
+      'Built an end-to-end takeoff and estimating platform for a US mechanical contractor. Drawing sets are triaged page by page with OCR rules and a local Qwen3-VL vision-language model, plumbing symbols are counted by a D-FINE detector served through ONNX, pipe runs are segmented and sized, and every fixture is priced through schedule-tag → assembly → price-book mapping. Estimators correct results on a Next.js review canvas before anything reaches the client. Runs in production on a GPU EC2 instance behind FastAPI.',
+    tech: ['Qwen3-VL', 'Ollama', 'D-FINE', 'ONNX Runtime', 'PyTorch', 'FastAPI', 'Next.js', 'AWS EC2 / S3', 'PostgreSQL'],
+    type: ['ai', 'web'],
+    featured: true,
+    caseStudy: {
+      context: 'Built at Neuralogic for a US mechanical contractor, 2026. I was Project Lead of this workstream.',
+      problem:
+        'To bid a job, plumbing and mechanical estimators work through drawing sets that run to hundreds of pages: find the plumbing and mechanical sheets, count every drain, valve and clean-out, measure pipe runs by size, then price each fixture against the company\'s assembly price books. It is slow, repetitive and inconsistent between estimators, and it gates every bid.',
+      approach: [
+        'Triaged sheets before detecting anything. OCR plus keyword rules classify each page (plumbing vs mechanical, plan vs schedule); only pages the rules cannot decide are escalated to Qwen3-VL running locally through Ollama, so the expensive model is spent where it adds information.',
+        'Counted symbols with a D-FINE object detector exported to ONNX, trained on 14 plumbing symbol classes (floor drains, roof drains, clean-outs, ball, check and balancing valves, reducers and more), and merged it with text-tag detection from the sheet legend so schedule codes such as FD-1 are counted too.',
+        'Segmented pipe runs with a segmentation-models-pytorch network and used spatial intersection to attach pipe-size labels to the symbols they serve.',
+        'Turned counts into money: fixture tags from the schedule map to assemblies, assemblies to items in the contractor\'s PVF price database, with a name matcher that learns from estimator corrections, and the result exports as an Excel estimate and an annotated PDF.',
+        'Kept humans in the loop: a Next.js + Konva canvas lets estimators add, move and delete detections, and results stay hidden from the client until the in-house review is signed off.',
+        'Shipped it as production infrastructure: FastAPI under systemd on a GPU EC2 instance behind Nginx, PostgreSQL, S3 for drawings and renders, a Dockerised frontend, separate staging and production, and CI on every push.',
+      ],
+      pipeline: [
+        { label: 'Drawing set', detail: 'Multi-hundred-page PDF' },
+        { label: 'Sheet triage', detail: 'OCR rules → Qwen3-VL fallback' },
+        { label: 'Detection', detail: 'D-FINE symbols (14 classes) + pipe segmentation' },
+        { label: 'Assembly pricing', detail: 'Tag → assembly → price book' },
+        { label: 'Review canvas', detail: 'Estimator corrections, sign-off' },
+        { label: 'Estimate', detail: 'Excel + annotated PDF' },
+      ],
+      highlights: [
+        { value: '14', label: 'plumbing symbol classes detected' },
+        { value: '38', label: 'production API endpoints' },
+        { value: '30B', label: 'parameter vision-language model (Qwen3-VL), self-hosted' },
+      ],
+      outcomes: [
+        'In production for the contractor, with separate staging and production environments.',
+        'Estimators review and correct a priced takeoff instead of counting symbols by hand.',
+        'Every count is traceable to a box on the drawing through the annotated PDF export.',
+      ],
+      learnings: [
+        'Rules first, model second. Cheap deterministic triage decides most pages; the VLM is a fallback for the ambiguous ones, not the default path.',
+        'A single physical fixture can surface through several schedule-tag groups. Counting per tag group inflated priced quantities (49 vs 9 for one drain type) until totals were reconciled at the assembly level.',
+        'Price books change. Learning name mappings from estimator corrections beat hand-maintained lookup tables.',
+      ],
+    },
+  },
+  {
+    slug: 'film-takeoff',
+    title: 'Film Takeoff',
+    tagline: 'Evidence-backed window-film, graphics & signage takeoffs from drawing sets',
+    summary:
+      'Finds every window that needs tint film in a set of drawings, measures it, and shows exactly where each number came from.',
+    org: 'Neuralogic',
+    year: '2026',
+    description:
+      'Built a document-intelligence pipeline that turns an architectural project archive into a window-film, graphics and signage takeoff (opening mark, width, height, panes, quantity, square feet), with every number tied to the page, region and rule that produced it. Combines searchable-PDF parsing, GPU PaddleOCR, schedule and dimension extraction and audited Gemini readers, and fails closed so uncertain rows go to review instead of the estimate. Validated against the client\'s own historical takeoffs.',
+    tech: ['Python', 'PyMuPDF', 'PaddleOCR', 'Gemini (Vertex AI)', 'Starlette', 'React', 'TypeScript', 'Playwright'],
+    type: ['ai', 'web'],
+    featured: true,
+    caseStudy: {
+      context: 'Built at Neuralogic for a window-film contractor, 2026.',
+      problem:
+        'A film takeoff means searching specifications and drawings for film, graphics or signage scope, identifying the affected openings, reading dimensions from schedules, elevations and details, counting every physical location on the plans, computing panes and square footage, and preparing an import for the contractor\'s quoting software. Drawings follow no common structure: one firm marks windows W1, another AF48, another uses a keynote, a room name or a detail reference such as 3/A9.01, and similar-looking labels can be rooms, grid lines or drawing bubbles.',
+      approach: [
+        'Made evidence the core data model. Every record carries its source PDF, page, bounding box, page role and confidence, and measurement evidence (how big) is kept separate from location evidence (where and how many).',
+        'Indexed each archive first: unpack, classify PDFs and pages by role, discover candidate mark families, read searchable text directly, and route flattened scans through tiled GPU PaddleOCR.',
+        'Extracted scope from specifications and notes, then schedules, plan tags, rotated architectural dimensions, pane geometry and quantities, normalised into a line-item identity model that tells opening marks, detail callouts and named locations apart.',
+        'Used Gemini on Vertex AI where judgement helps but never as the source of truth: offline, it drafts per-firm extraction configs; online, it runs as shadow readers whose proposals are scored against the deterministic result before any are adopted.',
+        'Failed closed. Rows without sufficient geometry, scope or quantity evidence stay in review states and cannot be exported, and reviewers confirm or exclude whole mark families rather than individual rows.',
+        'Wrapped it as a job service (per-job workspaces, process isolation for native-code hangs, versioned response schema, auth) with a React review app for family, pane, quantity and scope review and exports to spreadsheet, highlighted drawings and the quoting-software format.',
+      ],
+      pipeline: [
+        { label: 'Project archive', detail: 'Specs, plans, elevations, schedules' },
+        { label: 'Page index', detail: 'Roles, mark families, OCR where needed' },
+        { label: 'Scope search', detail: 'Film / graphics / signage notes' },
+        { label: 'Extraction', detail: 'Marks, schedules, dimensions, panes' },
+        { label: 'Evidence gates', detail: 'Shadow readers, review, fail-closed' },
+        { label: 'Exports', detail: 'Spreadsheet, highlights, quoting import' },
+      ],
+      highlights: [],
+      outcomes: [
+        'Takeoffs come back with every opening, dimension and quantity linked to the exact drawing and region it was read from, so an estimator can verify any number in one click.',
+        'Far more of each takeoff is now adopted automatically, and the few rows the system cannot prove are flagged for review instead of guessed.',
+        'Model hallucinations are caught by the verification gates before they reach the estimate.',
+        'Graphic details, named elevation locations and frame marks are recovered and linked to where they occur on the plans, across drawing styles from different architecture firms.',
+      ],
+      learnings: [
+        'A rule that fixes one project can quietly break another. Measuring every change against the client\'s real takeoffs, with a holdout that is never tuned on, is what kept accuracy honest.',
+        '"Where is it" and "how big is it" are different questions with different evidence. Merging them is how double-counting creeps in.',
+        'LLM output is most useful as a proposal with a verifier behind it; the verifier is what makes it safe to adopt.',
+      ],
+    },
+  },
+  {
+    slug: 'purchasing-agent',
+    title: 'Purchasing Agent',
+    tagline: 'Email-to-purchase-order agent wired into Microsoft Graph and Sage 100',
+    summary:
+      "Turns purchase-request emails and vendor quotes into ready-to-file purchase orders in the company's accounting system.",
+    org: 'Neuralogic',
+    year: '2026',
+    description:
+      'Co-built a purchasing co-pilot for a mechanical contractor\'s purchasing inbox. Purchase-request emails and vendor quote attachments are turned into a structured, validated request; deterministic rules then handle cost coding, consumables, tax and an autonomy tier before anything is written to the Sage 100 ERP. AI reads, rules decide: the model never invents an ID or a price.',
+    tech: ['Python', 'Pydantic', 'Microsoft Graph', 'Sage 100 API', 'OpenAI-compatible LLMs', 'pytest'],
+    type: ['ai'],
+    featured: true,
+    caseStudy: {
+      context: 'Built at Neuralogic for a mechanical contractor\'s purchasing team, 2026.',
+      problem:
+        'Construction and service purchase requests arrive as free-text emails with vendor quotes attached. Buyers re-key every one into the ERP, chase requesters for missing details, and check job numbers, cost codes and tax by hand.',
+      approach: [
+        'Drew a hard line between AI and rules. The extraction layer only turns an email and its quotes into fields; coding, vendor checks, budget, tax and autonomy are deterministic and auditable.',
+        'Routed by subject tags (construction vs service, small vs large PO), parsed the body and the quote separately with heuristics plus optional LLM gap-fill, and reconciled the two with a deterministic merge that records every mismatch as evidence.',
+        'Bounced incomplete requests straight back to the requester with exactly what is missing, instead of letting a buyer discover it later.',
+        'Assigned an autonomy tier (green, yellow, red, worst flag wins); red never produces an ERP write packet and is escalated with its reasons.',
+        'Integrated the real systems: Microsoft Graph for the shared mailbox, and Sage 100 Cloud for job, vendor and tax-district reads and purchase-order writes, verified with live tests.',
+      ],
+      pipeline: [
+        { label: 'Purchasing inbox', detail: 'Microsoft Graph' },
+        { label: 'Route', detail: 'Subject tags → PO type' },
+        { label: 'Extract', detail: 'Email body + quote attachments' },
+        { label: 'Merge', detail: 'Deterministic, mismatches kept' },
+        { label: 'Rules', detail: 'Coding, consumables, tax, autonomy tier' },
+        { label: 'Sage 100', detail: 'Purchase order write' },
+      ],
+      highlights: [],
+      outcomes: [
+        'Purchase requests go from inbox to a validated, ERP-ready purchase order without a buyer re-keying anything.',
+        'Incomplete requests are bounced back to the requester automatically with exactly what is missing, instead of stalling in the inbox.',
+        'Routine orders can proceed on their own, while anything unusual is escalated to a buyer with the reasons spelled out.',
+        'Reads and purchase-order writes run against the live Sage 100 ERP, not a mock.',
+      ],
+      learnings: [
+        'Let the model read and the rules decide. Keeping IDs, prices, tax and approvals out of the LLM made every outcome explainable to the purchasing team and easy to audit.',
+        'Never trust one source. Requesters often type a different price, quantity or part number than the vendor actually quoted, so the agent reads the email and the quote separately and flags any difference for a buyer.',
+        'Autonomy should be earned, not assumed. A worst-flag-wins tier system let the agent act on routine orders while staying conservative everywhere else.',
       ],
     },
   },
@@ -87,6 +236,8 @@ export const projects: Project[] = [
     slug: 'legado',
     title: 'Legado',
     tagline: 'Auditing degraded 1970s property records with multi-modal OCR',
+    summary:
+      'Checks decades-old, partly handwritten property records against legal checklists and writes the audit report.',
     org: 'SAynt AI',
     year: '2025',
     description:
@@ -132,6 +283,8 @@ export const projects: Project[] = [
     slug: 'justassemble',
     title: 'JustAssemble',
     tagline: 'Multi-agent competitor analysis over 15+ SEMrush endpoints',
+    summary:
+      'Builds a competitor report (traffic, keywords, ads and a SWOT) from live SEO data for an advertising team.',
     org: 'SAynt AI',
     year: '2025',
     description:
@@ -208,6 +361,18 @@ export const projects: Project[] = [
     tech: ['Kafka', 'MongoDB', 'Flask', 'Librosa', 'ScaNN'],
     github: 'https://github.com/Muttayab99/Music-Recommendation-System-using-Scann-Near-Neighbor',
     type: ['ai', 'data'],
+    featured: false,
+  },
+  {
+    slug: 'mep-symbol-detection',
+    title: 'MEP Symbol Detection',
+    tagline: 'YOLO symbol detection with a synthetic training-data pipeline',
+    org: 'Neuralogic',
+    year: '2026',
+    description:
+      'Built the computer-vision data pipeline for an MEP estimating platform: pulled mechanical and electrical sheets out of drawing sets, trained a YOLO model to crop the drawing area, and generated synthetic training data to detect 11 symbol classes.',
+    tech: ['YOLO (Ultralytics)', 'OpenCV', 'PyMuPDF', 'Shapely', 'Next.js', 'Supabase'],
+    type: ['ai'],
     featured: false,
   },
   {

@@ -11,18 +11,20 @@ export interface Job {
 
 export const experiences: Job[] = [
   {
-    title: 'AI Engineer & Project Lead',
+    title: 'AI Engineer',
     company: 'Neuralogic',
     location: 'Remote',
     period: 'Jan 2026 - Present',
     type: 'Full-time',
-    projects: ['vesta'],
+    projects: ['vesta', 'mep-takeoff', 'film-takeoff', 'purchasing-agent', 'mep-symbol-detection'],
     description: [
-      'Led computer vision pipelines for automated construction cost estimation, fine-tuning SAM3 (848M parameters) on a custom dataset using an AWS EC2 instance with 80 GB VRAM, achieving precise element segmentation on architectural plans.',
-      'Integrated PaddleOCR and Google Vertex AI to extract structured cost data from construction documents, reducing manual estimation effort significantly.',
-      'Built and deployed production-grade FastAPI services to expose AI inference pipelines, including annotation management workflows and model prediction endpoints.',
-      'Managed training data curation and model fine-tuning using Roboflow, overseeing annotation quality control to ensure high-fidelity ground truth for CV models.',
-      'Leading a second workstream as Project Lead for MEP (Mechanical, Electrical & Plumbing) plan estimation, coordinating team deliverables across model development and integration and architecting a contract automation module leveraging GenAI to auto-generate and review construction contracts.',
+      'Fine-tuned an 848M-parameter SAM3 model on our own labelled plans to segment concrete elements for automated cost estimates, training on an AWS GPU instance with 80 GB of VRAM.',
+      'Managed the training data in Roboflow and kept annotation quality high, which did more for the model than any architecture change.',
+      'Used PaddleOCR and Gemini on Vertex AI to read plan legends and match materials to prices, and served the whole pipeline through FastAPI so estimators review a takeoff instead of measuring from scratch.',
+      'Built a takeoff and pricing tool for a US mechanical contractor. Qwen3-VL sorts the plumbing and mechanical sheets, a D-FINE model served through ONNX Runtime counts fixtures and valves, a segmentation model measures pipe runs, and everything is priced against their price book. It runs in production on FastAPI and AWS with a Next.js review screen for estimators.',
+      "Built a window film takeoff pipeline using PyMuPDF, GPU PaddleOCR and Gemini on Vertex AI. It ties every number back to the spot on the drawing it came from and holds back anything it can't verify.",
+      "Helped build an assistant in Python and Pydantic that reads purchase request emails through Microsoft Graph, along with the vendor quotes, and turns them into purchase orders in the client's Sage 100 system.",
+      'Was project lead for the plumbing and mechanical workstream, coordinating model development and integration across the team, and designed a GenAI module for drafting and reviewing construction contracts.',
     ],
   },
   {

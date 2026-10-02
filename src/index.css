@@ -32,8 +32,8 @@
     --input: 240 5.9% 90%;
     --ring: 172 66% 36%;
 
-    /* Brand accent (teal). Colour only: labels, markers, hover/focus, headings. */
-    --brand: 172 66% 36%;
+    /* Brand accent (sky blue). Colour only: labels, markers, hover/focus, headings. */
+    --brand: 200 98% 39%;
     --brand-foreground: 0 0% 100%;
 
     --radius: 0.75rem;
@@ -80,7 +80,7 @@
     --input: 240 3.7% 15.9%;
     --ring: 172 66% 50%;
 
-    --brand: 172 66% 50%;
+    --brand: 198 93% 60%;
     --brand-foreground: 240 10% 3.9%;
 
     /* Custom tokens for dark mode */

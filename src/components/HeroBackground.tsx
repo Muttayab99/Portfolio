@@ -116,7 +116,7 @@ export const HeroBackground = ({ className = '' }: { className?: string }) => {
       let css: string;
       switch (c) {
         case 4: css = `hsl(28 90% 60% / ${(a * 0.9).toFixed(3)})`; break;
-        case 3: css = isLight ? `hsl(180 40% 26% / ${a.toFixed(3)})` : `hsl(180 45% 56% / ${a.toFixed(3)})`; break;
+        case 3: css = isLight ? `hsl(200 70% 32% / ${a.toFixed(3)})` : `hsl(198 85% 62% / ${a.toFixed(3)})`; break;
         case 2: css = isLight ? `hsl(210 45% 30% / ${a.toFixed(3)})` : `hsl(208 50% 52% / ${a.toFixed(3)})`; break;
         case 1: css = isLight ? `hsl(215 18% 38% / ${(a * 0.85).toFixed(3)})` : `hsl(215 18% 50% / ${(a * 0.85).toFixed(3)})`; break;
         default: css = `hsl(${readHsl('--foreground', '0 0% 98%')} / ${(a * (isLight ? 0.55 : 0.4)).toFixed(3)})`;

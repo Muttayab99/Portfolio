@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ExternalLink, Github, Star, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
@@ -20,16 +20,12 @@ const filters: { key: Filter; label: string }[] = [
   { key: "web", label: "Web Development" },
 ];
 
-const SPOTLIGHT_MS = 6000;
-
 export const Projects = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const reduce = useReducedMotion();
   const [activeFilter, setActiveFilter] = useState<Filter>("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [spotlightIndex, setSpotlightIndex] = useState(0);
-  const [spotlightPaused, setSpotlightPaused] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
   const filteredProjects =
@@ -38,10 +34,6 @@ export const Projects = () => {
   const featuredProjects = filteredProjects.filter((p) => p.featured);
   const otherProjects = filteredProjects.filter((p) => !p.featured);
 
-  // Safe index to prevent out-of-bounds during filter transitions
-  const safeSpotlightIndex = spotlightIndex >= featuredProjects.length ? 0 : spotlightIndex;
-  const spotlight = featuredProjects[safeSpotlightIndex];
-
   // Pagination (sliding window of 1 item per click)
   const itemsPerPage = 3;
   const totalSlides = Math.max(1, otherProjects.length - itemsPerPage + 1);
@@ -49,17 +41,7 @@ export const Projects = () => {
 
   useEffect(() => {
     setCurrentPage(0);
-    setSpotlightIndex(0);
   }, [activeFilter]);
-
-  // Auto-rotate spotlight; pauses on hover/focus and for reduced motion
-  useEffect(() => {
-    if (featuredProjects.length <= 1 || spotlightPaused || reduce) return;
-    const interval = setInterval(() => {
-      setSpotlightIndex((prev) => (prev + 1) % featuredProjects.length);
-    }, SPOTLIGHT_MS);
-    return () => clearInterval(interval);
-  }, [featuredProjects.length, spotlightPaused, reduce]);
 
   return (
     <section id="projects" className="py-24 md:py-32 relative" ref={ref}>
@@ -112,51 +94,26 @@ export const Projects = () => {
             ))}
           </motion.div>
 
-          {/* Spotlight */}
-          {spotlight && (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 }}
-              className="mb-16 max-w-4xl mx-auto"
-              onMouseEnter={() => setSpotlightPaused(true)}
-              onMouseLeave={() => setSpotlightPaused(false)}
-              onFocusCapture={() => setSpotlightPaused(true)}
-              onBlurCapture={() => setSpotlightPaused(false)}
-            >
-              <h3 className="text-2xl font-bold mb-6 text-center">
-                <span className="text-gradient">Featured Spotlight</span>
-              </h3>
-              <div className="relative h-[420px] sm:h-[360px] md:h-[300px]">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={spotlight.slug}
-                    initial={reduce ? { opacity: 0 } : { opacity: 0, x: 60 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={reduce ? { opacity: 0 } : { opacity: 0, x: -60 }}
-                    transition={{ duration: 0.4 }}
-                    className="absolute inset-0"
-                  >
-                    <SpotlightCard project={spotlight} onOpen={() => setSelectedProject(spotlight)} />
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Indicators */}
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
-                  {featuredProjects.map((p, idx) => (
-                    <button
-                      key={p.slug}
-                      onClick={() => setSpotlightIndex(idx)}
-                      aria-label={`Show ${p.title}`}
-                      aria-current={idx === safeSpotlightIndex}
-                      className={`h-2 rounded-full transition-all ${
-                        idx === safeSpotlightIndex ? "bg-brand w-8" : "bg-muted-foreground/30 w-2 hover:bg-brand/50"
-                      }`}
-                    />
-                  ))}
-                </div>
+          {/* Featured work: every featured project visible at once */}
+          {featuredProjects.length > 0 && (
+            <div className="mb-20 max-w-6xl mx-auto">
+              <div className="flex items-baseline justify-between gap-4 mb-6">
+                <h3 className="text-lg font-semibold">Featured work</h3>
+                <span className="hidden sm:block text-sm text-muted-foreground">Production systems, with case studies</span>
               </div>
-            </motion.div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {featuredProjects.map((p, idx) => (
+                  <motion.div
+                    key={p.slug}
+                    initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: reduce ? 0 : 0.3 + idx * 0.05, duration: 0.35 }}
+                  >
+                    <FeaturedCard project={p} onOpen={() => setSelectedProject(p)} />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           )}
 
           {otherProjects.length > 0 && (
@@ -340,42 +297,37 @@ export const Projects = () => {
   );
 };
 
-/** Featured card. Links straight to the case study when one exists, otherwise opens the modal. */
-const SpotlightCard = ({ project, onOpen }: { project: Project; onOpen: () => void }) => {
+/**
+ * Featured card: what the project is, in one plain sentence, and where it was
+ * built. Details live on the case study page, so the card stays quiet.
+ */
+const FeaturedCard = ({ project, onOpen }: { project: Project; onOpen: () => void }) => {
   const body = (
     <>
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <span className="flex items-center gap-2 text-brand font-mono text-xs">
-          <Star size={14} className="fill-brand text-brand" />
-          Spotlight Project
-        </span>
-        <span className="font-mono text-[11px] text-muted-foreground">
-          {project.org ? `${project.org} · ` : ""}{project.year}
-        </span>
-      </div>
-      <h4 className="text-xl md:text-2xl font-bold mb-1">{project.title}</h4>
-      <p className="text-sm text-brand/80 mb-3">{project.tagline}</p>
-      <p className="text-base text-muted-foreground mb-4 line-clamp-3">{project.description}</p>
-      <div className="flex flex-wrap items-center gap-2">
-        {project.tech.slice(0, 5).map((tech) => (
-          <span key={tech} className="text-xs font-mono bg-brand/10 text-brand px-2 py-1 rounded">
-            {tech}
-          </span>
-        ))}
-        <span className="flex-1" />
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground group-hover:text-brand transition-colors">
-          {project.caseStudy ? "Read case study" : "Details"}
-          <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
-        </span>
-      </div>
+      <p className="text-xs text-muted-foreground mb-2">
+        {project.org ? `${project.org} · ` : ""}{project.year}
+      </p>
+      <h4 className="text-lg font-semibold leading-snug">{project.title}</h4>
+
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{project.summary ?? project.tagline}</p>
+
+      <p className="mt-auto pt-6 text-xs text-muted-foreground/80 truncate">
+        {project.tech.slice(0, 4).join("  ·  ")}
+      </p>
+
+      {/* The whole card is the link; this is its visible call to action. */}
+      <span className="mt-5 inline-flex w-fit items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 group-hover:border-brand/60 group-hover:bg-brand/10 group-hover:text-brand">
+        {project.caseStudy ? "Read case study" : "View details"}
+        <ArrowRight size={15} aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5" />
+      </span>
     </>
   );
 
   const className =
-    "group glass-card rounded-lg p-6 md:p-8 h-full block cursor-pointer hover:border-brand/50 transition-all";
+    "group h-full flex flex-col rounded-xl border border-border/70 bg-card/40 p-6 transition-colors duration-200 hover:border-brand/50 hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60";
 
   return project.caseStudy ? (
-    <Link to={`/projects/${project.slug}`} className={className}>
+    <Link to={`/projects/${project.slug}`} className={className} aria-label={`${project.title} case study`}>
       {body}
     </Link>
   ) : (

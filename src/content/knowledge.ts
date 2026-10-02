@@ -83,10 +83,12 @@ export function buildKnowledgeBase(): Chunk[] {
         text: [
           `${p.title} outcomes:`,
           ...cs.outcomes.map((o) => `- ${o}`),
-          `Key facts: ${cs.highlights.map((h) => `${h.value} ${h.label}`).join('; ')}.`,
+          cs.highlights.length ? `Key facts: ${cs.highlights.map((h) => `${h.value} ${h.label}`).join('; ')}.` : '',
           'What I learned:',
           ...cs.learnings.map((l) => `- ${l}`),
-        ].join('\n'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
       });
     }
   }

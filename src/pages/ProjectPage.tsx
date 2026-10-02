@@ -106,17 +106,19 @@ const ProjectPage = () => {
         </motion.p>
 
         {/* Highlights */}
-        <motion.dl
-          {...fade(0.25)}
-          className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3"
-        >
-          {cs.highlights.map((h) => (
-            <div key={h.label} className="glass-card rounded-xl px-5 py-4">
-              <dd className="font-heading font-bold text-2xl md:text-3xl tracking-tight">{h.value}</dd>
-              <dt className="text-xs text-muted-foreground mt-1">{h.label}</dt>
-            </div>
-          ))}
-        </motion.dl>
+        {cs.highlights.length > 0 && (
+          <motion.dl
+            {...fade(0.25)}
+            className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3"
+          >
+            {cs.highlights.map((h) => (
+              <div key={h.label} className="glass-card rounded-xl px-5 py-4">
+                <dd className="font-heading font-bold text-2xl md:text-3xl tracking-tight">{h.value}</dd>
+                <dt className="text-xs text-muted-foreground mt-1">{h.label}</dt>
+              </div>
+            ))}
+          </motion.dl>
+        )}
 
         {/* Stack + links */}
         <motion.div {...fade(0.3)} className="mt-6 flex flex-wrap items-center gap-2">
